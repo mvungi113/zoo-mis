@@ -31,4 +31,12 @@ class FirebaseService
             ->getReference('zoo_logs')
             ->getValue();
     }
+
+// notification logs
+public function getNotifications()
+{
+    return $this->database
+        ->getReference('notifications')
+        ->getValue();
+}
 }

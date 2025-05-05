@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\NotificationController;
 
 // Homepage route (accessible to guests)
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -25,8 +26,15 @@ Route::middleware('auth')->group(function () {
 });
 
 // Show logs (authenticated users only)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
-});
+
+Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
+Route::get('/logs/table', [LogController::class, 'table'])->name('logs.table');// AJAX route for real-time updates
+
+Route::get('/dashboard/charts', [LogController::class, 'pieCharts']);
+
+
+
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+
 
 require __DIR__.'/auth.php';
