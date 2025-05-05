@@ -94,6 +94,7 @@
         fetchCharts();
         setInterval(fetchCharts, 5000); // Auto-refresh every 5 seconds
     </script>
+    
 
     
 </x-app-layout>
