@@ -1,8 +1,8 @@
-<x-guest-layout>
+<x-app-layout>
     <!-- Centering the form -->
     <div class="flex items-center justify-center min-h-screen">
         <div class="w-full sm:max-w-md px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('admin.users.store') }}">
                 @csrf
 
                 <!-- First Name -->
@@ -78,4 +78,4 @@
             </form>
         </div>
     </div>
-</x-guest-layout>
+</x-app-layout>

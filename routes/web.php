@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Controllers\HomeController;
@@ -6,6 +5,10 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Security\SecurityDashboardController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ReportController;
 
 // Homepage route (accessible to guests)
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -16,7 +19,7 @@ Route::post('/contact', [HomeController::class, 'contact'])->name('contact.submi
 
 // Breeze routes (already defined by Breeze)
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return redirect()->route('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -32,9 +35,27 @@ Route::get('/logs/table', [LogController::class, 'table'])->name('logs.table');/
 
 Route::get('/dashboard/charts', [LogController::class, 'pieCharts']);
 
-
-
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
+// based on role
+Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+Route::get('/security/dashboard', [SecurityDashboardController::class, 'index'])->name('security.dashboard');
+
+Route::get('/admin/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/admin/users/manage', [App\Http\Controllers\UserController::class, 'manage'])->name('admin.users.manage');
+Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
+Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+Route::get('/admin/users/export', [UserController::class, 'export'])->name('admin.users.export');
+Route::get('/logs/export', [LogController::class, 'export'])->name('logs.export');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
+    Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
+});
+
+Route::get('/admin/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('admin.reports.index');
+Route::resource('users', \App\Http\Controllers\UserController::class);
 
 require __DIR__.'/auth.php';
