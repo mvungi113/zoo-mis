@@ -58,4 +58,12 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/admin/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('admin.reports.index');
 Route::resource('users', \App\Http\Controllers\UserController::class);
 
+// Add these routes to your existing routes
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard/charts', [App\Http\Controllers\DashboardController::class, 'getCharts'])->name('dashboard.charts');
+Route::get('/dashboard/kpis', [App\Http\Controllers\DashboardController::class, 'getKPIs'])->name('dashboard.kpis');
+Route::get('/dashboard/recent-activity', [App\Http\Controllers\DashboardController::class, 'getRecentActivity'])->name('dashboard.recent-activity');
+Route::get('/dashboard/trends', [App\Http\Controllers\DashboardController::class, 'getTrends'])->name('dashboard.trends');
+Route::get('/dashboard/system-status', [App\Http\Controllers\DashboardController::class, 'getSystemStatus'])->name('dashboard.system-status');
+
 require __DIR__.'/auth.php';
