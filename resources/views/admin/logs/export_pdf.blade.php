@@ -1,4 +1,4 @@
-{{-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -36,4 +36,4 @@
         </tbody>
     </table>
 </body>
-</html> --}}
+</html>

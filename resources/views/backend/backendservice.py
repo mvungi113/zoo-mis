@@ -7,7 +7,7 @@ from firebase_admin import credentials, db
 # Firebase setup
 cred = credentials.Certificate("C:/project/zoomis/resources/views/backend/zoomisapi-firebase.json")
 firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://zoomisapi-default-rtdb.firebaseio.com/'
+    'databaseURL': 'https://zoo-2025-default-rtdb.firebaseio.com/'
 })
 
 # Load YOLO models
@@ -61,8 +61,8 @@ while True:
                 # Push to zoo_logs (always)
                 db.reference("zoo_logs").push(log_data)
 
-                # Push to notifications if confidence ≥ 0.5 and hazard/warning
-                if class_conf >= 0.5 and (status in hazard_behaviors or status in warning_behaviors):
+                # Push to notifications if confidence ≥ 0.8 and hazard/warning
+                if detection_conf >= 0.8 and class_conf >= 0.8 and (status in hazard_behaviors or status in warning_behaviors):
                     notification_type = "Hazard" if status in hazard_behaviors else "Warning"
                     db.reference("notifications").push({
                         "type": notification_type,

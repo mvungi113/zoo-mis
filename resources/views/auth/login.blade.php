@@ -43,14 +43,14 @@
                     </x-primary-button>
                 </div>
 
-                <!-- Don't Have an Account? -->
+                {{-- <!-- Don't Have an Account? -->
                 <div class="flex items-center justify-start mt-4">
                     @if (Route::has('register'))
                         <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-800" href="{{ route('register') }}">
                             {{ __("Don't have an account? Register here") }}
                         </a>
                     @endif
-                </div>
+                </div> --}}
             </form>
         </div>
     </div>
