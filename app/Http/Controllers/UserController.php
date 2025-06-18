@@ -132,22 +132,40 @@ class UserController extends Controller
         // Redirect or return as needed
         return redirect()->route('admin.users.manage')->with('success', 'User registered successfully.');
     }
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        $user = User::findOrFail($id);
+        $rules = [
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username,' . $user->id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'role' => ['required', 'string', 'in:admin,security'],
+        ];
 
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name'  => 'required|string|max:255',
-            'username'   => 'required|string|max:255|unique:users,username,' . $user->id,
-            'email'      => 'required|email|max:255|unique:users,email,' . $user->id,
-            'role'       => 'required|in:admin,security',
+        // Only validate password fields if password is being changed
+        if ($request->filled('password')) {
+            $rules['password'] = ['required', 'string', 'min:8', 'confirmed'];
+        }
+
+        $validated = $request->validate($rules);
+
+        // Update user data
+        $user->update([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+            'role' => $validated['role'],
         ]);
 
-        $user->update($validated);
+        // Update password if provided (admin can reset any user's password)
+        if ($request->filled('password')) {
+            $user->update([
+                'password' => Hash::make($validated['password'])
+            ]);
+        }
 
-        // Redirect to manage user screen after update
         return redirect()->route('admin.users.manage')
-            ->with('success', 'User updated successfully.');
+                        ->with('success', 'User updated successfully.');
     }
 }

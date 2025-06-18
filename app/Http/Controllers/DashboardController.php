@@ -188,58 +188,104 @@ class DashboardController extends Controller
             return response()->json([], 500);
         }
     }
+public function getTrends(Request $request)
+{
+    try {
+        $period = $request->get('period', '24h');
+        $logs = array_values($this->getLogs());
 
-    public function getTrends(Request $request)
-    {
-        try {
-            $period = $request->get('period', '24h');
-            $logs = collect($this->getLogs());
-            
-            Log::info('Dashboard getTrends: Processing ' . $logs->count() . ' logs for period: ' . $period);
-            
-            // Generate sample trend data based on period - you can make this more sophisticated later
-            switch ($period) {
-                case '24h':
-                    $labels = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
-                    $normal = [5, 8, 12, 15, 10, 7];
-                    $warning = [2, 3, 5, 8, 6, 4];
-                    $hazard = [0, 1, 2, 3, 2, 1];
-                    break;
-                case '7d':
-                    $labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                    $normal = [25, 30, 28, 35, 32, 20, 18];
-                    $warning = [8, 12, 10, 15, 12, 6, 5];
-                    $hazard = [2, 3, 1, 4, 3, 1, 0];
-                    break;
-                case '30d':
-                    $labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-                    $normal = [180, 210, 195, 220];
-                    $warning = [65, 78, 72, 85];
-                    $hazard = [12, 18, 15, 22];
-                    break;
-                default:
-                    $labels = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
-                    $normal = [5, 8, 12, 15, 10, 7];
-                    $warning = [2, 3, 5, 8, 6, 4];
-                    $hazard = [0, 1, 2, 3, 2, 1];
-            }
-            
-            return response()->json([
-                'labels' => $labels,
-                'normal' => $normal,
-                'warning' => $warning,
-                'hazard' => $hazard
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Dashboard getTrends error: ' . $e->getMessage());
-            return response()->json([
-                'labels' => [],
-                'normal' => [],
-                'warning' => [],
-                'hazard' => []
-            ], 500);
+        // Classifications
+        $normal = ['eating', 'resting', 'walking', 'sleeping'];
+        $warning = ['visitor close', 'user interacting with animal', 'unusual behavior'];
+        $hazard = ['aggressive', 'attacking', 'cage scratching', 'restricted zone', 'animal escape attempt', 'injury'];
+
+        $now = Carbon::now();
+        $timeRanges = [];
+        $labels = [];
+
+        switch ($period) {
+            case '24h':
+                for ($i = 5; $i >= 0; $i--) {
+                    $start = $now->copy()->subHours(($i + 1) * 4);
+                    $end = $now->copy()->subHours($i * 4);
+                    $timeRanges[] = ['start' => $start, 'end' => $end];
+                    $labels[] = $start->format('H:i');
+                }
+                break;
+
+            case '7d':
+                for ($i = 6; $i >= 0; $i--) {
+                    $start = $now->copy()->subDays($i + 1);
+                    $end = $now->copy()->subDays($i);
+                    $timeRanges[] = ['start' => $start, 'end' => $end];
+                    $labels[] = $start->format('D');
+                }
+                break;
+
+            case '30d':
+                for ($i = 4; $i >= 0; $i--) {
+                    $start = $now->copy()->subDays(($i + 1) * 6);
+                    $end = $now->copy()->subDays($i * 6);
+                    $timeRanges[] = ['start' => $start, 'end' => $end];
+                    $labels[] = $start->format('M d');
+                }
+                break;
+
+            default: // 90d
+                for ($i = 4; $i >= 0; $i--) {
+                    $start = $now->copy()->subDays(($i + 1) * 18);
+                    $end = $now->copy()->subDays($i * 18);
+                    $timeRanges[] = ['start' => $start, 'end' => $end];
+                    $labels[] = $start->format('M d');
+                }
+                break;
         }
+
+        $normalCounts = array_fill(0, count($labels), 0);
+        $warningCounts = array_fill(0, count($labels), 0);
+        $hazardCounts = array_fill(0, count($labels), 0);
+
+        foreach ($logs as $log) {
+            if (empty($log['created_at']) || empty($log['classification'])) continue;
+
+            try {
+                $logDate = Carbon::parse($log['created_at']);
+                $classification = strtolower(trim($log['classification']));
+
+                foreach ($timeRanges as $i => $range) {
+                    if ($logDate->between($range['start'], $range['end'])) {
+                        if (in_array($classification, $hazard)) {
+                            $hazardCounts[$i]++;
+                        } elseif (in_array($classification, $warning)) {
+                            $warningCounts[$i]++;
+                        } elseif (in_array($classification, $normal)) {
+                            $normalCounts[$i]++;
+                        }
+                        break;
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Failed to parse log date: ' . $log['created_at']);
+                continue;
+            }
+        }
+
+        return response()->json([
+            'labels' => $labels,
+            'normal' => $normalCounts,
+            'warning' => $warningCounts,
+            'hazard' => $hazardCounts
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Dashboard getTrends error: ' . $e->getMessage());
+        return response()->json([
+            'labels' => [],
+            'normal' => [],
+            'warning' => [],
+            'hazard' => []
+        ], 500);
     }
+}
 
     public function getSystemStatus()
     {

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Kreait\Firebase\Factory;
 use Illuminate\Support\Facades\Response;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class ReportController extends Controller
 {
@@ -13,7 +15,7 @@ class ReportController extends Controller
     {
         $factory = (new Factory)
             ->withServiceAccount(base_path('zoomisapi-firebase.json'))
-            ->withDatabaseUri('https://zoomisapi-default-rtdb.firebaseio.com/'); // <-- Set correct URI
+            ->withDatabaseUri('https://zoomisapi-default-rtdb.firebaseio.com/');
 
         $database = $factory->createDatabase();
 
@@ -21,7 +23,7 @@ class ReportController extends Controller
         $logs = $database->getReference('zoo_logs')->getValue();
 
         // Convert logs to a collection for easier handling
-        $reports = collect($logs)->map(function ($item, $key) {
+        $allReports = collect($logs)->map(function ($item, $key) {
             return (object)[
                 'id' => $key,
                 'animal_name' => $item['animal_name'] ?? '',
@@ -33,11 +35,11 @@ class ReportController extends Controller
         });
 
         // Get all unique behaviors for the filter dropdown
-        $behaviors = $reports->pluck('classification')->unique()->filter();
+        $behaviors = $allReports->pluck('classification')->unique()->filter();
 
         // Filter by behavior if requested
         if ($request->filled('behavior')) {
-            $reports = $reports->where('classification', $request->behavior);
+            $allReports = $allReports->where('classification', $request->behavior);
         }
 
         // --- CSV Export ---
@@ -48,12 +50,12 @@ class ReportController extends Controller
                 'Content-Disposition' => "attachment; filename=\"$filename\"",
             ];
 
-            $callback = function() use ($reports) {
+            $callback = function() use ($allReports) {
                 $handle = fopen('php://output', 'w');
                 // Add UTF-8 BOM for Excel
                 fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
                 fputcsv($handle, ['ID', 'Animal', 'Camera', 'Behavior', 'Confidence', 'Created At']);
-                foreach ($reports as $report) {
+                foreach ($allReports as $report) {
                     fputcsv($handle, [
                         $report->id,
                         $report->animal_name,
@@ -71,9 +73,28 @@ class ReportController extends Controller
 
         // --- PDF Export ---
         if ($request->get('export') === 'pdf') {
-            $pdf = Pdf::loadView('admin.reports.export_pdf', ['reports' => $reports]);
+            $pdf = Pdf::loadView('admin.reports.export_pdf', ['reports' => $allReports]);
             return $pdf->download('reports_' . now()->format('Ymd_His') . '.pdf');
         }
+
+        // Pagination setup
+        $perPage = 12;
+        $currentPage = Paginator::resolveCurrentPage();
+        $currentItems = $allReports->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        
+        $reports = new LengthAwarePaginator(
+            $currentItems,
+            $allReports->count(),
+            $perPage,
+            $currentPage,
+            [
+                'path' => $request->url(),
+                'pageName' => 'page',
+            ]
+        );
+
+        // Preserve query parameters for pagination links
+        $reports->appends($request->query());
 
         return view('admin.reports.index', compact('reports', 'behaviors'));
     }

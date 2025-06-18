@@ -35,7 +35,15 @@ Route::get('/logs/table', [LogController::class, 'table'])->name('logs.table');/
 
 Route::get('/dashboard/charts', [LogController::class, 'pieCharts']);
 
-Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+// Notifications routes
+Route::prefix('notifications')->name('notifications.')->group(function () {
+    Route::get('/', [NotificationController::class, 'index'])->name('index');
+    Route::get('/refresh', [NotificationController::class, 'refresh'])->name('refresh');
+    Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('markAllRead');
+    Route::delete('/clear', [NotificationController::class, 'clear'])->name('clear');
+    Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
+    Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+});
 
 // based on role
 Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');

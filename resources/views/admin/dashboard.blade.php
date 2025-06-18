@@ -1,383 +1,322 @@
 <x-app-layout>
-    <div class="py-8 max-w-7xl mx-auto space-y-8">
-        <!-- Key Metrics Section -->
-        <div>
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Key Metrics</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Detections</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white" id="totalDetections">0</p>
-                        </div>
+    <!-- Enhanced Background with Real-time Indicators -->
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 relative">
+        <!-- Live Connection Status Bar -->
+        <div id="connectionStatus" class="relative top-0 left-0 right-0 z-40 bg-green-500 text-white text-center py-2 text-sm font-medium transition-all duration-300 mb-4 rounded-lg mx-4">
+            <span><i class="bi bi-check-circle me-1"></i>System Online: Real-time monitoring active</span>
+        </div>
+
+        <!-- Floating Background Elements -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-purple-200 to-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob dark:from-blue-900 dark:to-purple-900"></div>
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-gradient-to-br from-blue-200 to-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000 dark:from-indigo-900 dark:to-purple-900"></div>
+            <div class="absolute top-1/3 right-1/4 w-96 h-96 bg-gradient-to-br from-cyan-200 to-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000 dark:from-purple-900 dark:to-blue-900"></div>
+        </div>
+
+        <div class="relative z-10 py-8 max-w-7xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
+            <!-- Header -->
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div class="mb-6 lg:mb-0">
+                    <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+                            Zoo Intelligence
+                        </span>
+                        <span class="text-gray-900 dark:text-white">Dashboard</span>
+                    </h1>
+                    <p class="mt-2 text-lg text-gray-600 dark:text-gray-300">Monitoring animal behaviors and activity patterns in real-time.</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div id="refreshIndicator" class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-semibold px-3 py-1 rounded-full flex items-center">
+                        <i class="bi bi-arrow-repeat mr-1"></i>
+                        <span>Auto refreshing</span>
+                    </div>
+                    <div class="relative">
+                        <button id="refreshBtn" class="bg-white dark:bg-gray-800 shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-white font-semibold py-2 px-4 border border-gray-200 dark:border-gray-700 rounded-lg inline-flex items-center transition-all duration-200">
+                            <i class="bi bi-arrow-clockwise mr-2"></i>
+                            <span>Refresh All</span>
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-                            <svg class="w-6 h-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Active Cameras</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white" id="activeCameras">0</p>
-                        </div>
+            <!-- System Status Panel -->
+            <div id="systemStatus" class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div class="flex items-center mb-4 lg:mb-0">
+                    <div class="bg-green-500 h-16 w-16 rounded-full flex items-center justify-center mr-4">
+                        <i class="bi bi-shield-check text-white text-3xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">System Status</h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">All systems operational</p>
                     </div>
                 </div>
-
-                <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-full">
-                            <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                            </svg>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center">
+                        <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-full mr-3">
+                            <i class="bi bi-database text-green-600 dark:text-green-400"></i>
                         </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Alerts Today</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white" id="alertsToday">0</p>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white">Firebase</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400" id="firebaseStatus">Connected</p>
                         </div>
                     </div>
-                </div>
-
-                <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-full">
-                            <svg class="w-6 h-6 text-red-600 dark:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center">
+                        <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-full mr-3">
+                            <i class="bi bi-camera-video text-green-600 dark:text-green-400"></i>
                         </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Critical Alerts</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white" id="criticalAlerts">0</p>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white">Live Cameras</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400" id="cameraStatus">4 active</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center">
+                        <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-full mr-3">
+                            <i class="bi bi-cpu text-green-600 dark:text-green-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white">Detection Engine</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400" id="detectionEngineStatus">Processing</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Recent Activity and System Status Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Recent Activity</h2>
-                <div class="bg-white dark:bg-gray-900 rounded-lg shadow">
-                    <div class="p-6">
-                        <div class="space-y-4" id="recentActivity">
-                            <div class="text-center text-gray-500 dark:text-gray-400 py-8">
-                                Loading recent activities...
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-12 h-32 w-32 bg-yellow-500 opacity-10 rounded-full"></div>
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                        <i class="bi bi-camera mr-2 text-yellow-500"></i> Total Detections
+                    </h2>
+                    <div class="flex items-baseline">
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white" id="totalDetections">Loading...</p>
+                        <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">events</span>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        Across all cameras and animals
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-12 h-32 w-32 bg-blue-500 opacity-10 rounded-full"></div>
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                        <i class="bi bi-camera-video mr-2 text-blue-500"></i> Active Cameras
+                    </h2>
+                    <div class="flex items-baseline">
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white" id="activeCameras">Loading...</p>
+                        <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">cameras</span>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        Reporting in last 24 hours
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-12 h-32 w-32 bg-indigo-500 opacity-10 rounded-full"></div>
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                        <i class="bi bi-bell mr-2 text-indigo-500"></i> Alerts Today
+                    </h2>
+                    <div class="flex items-baseline">
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white" id="alertsToday">Loading...</p>
+                        <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">alerts</span>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        Generated in the last 24h
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-12 h-32 w-32 bg-red-500 opacity-10 rounded-full"></div>
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                        <i class="bi bi-exclamation-triangle mr-2 text-red-500"></i> Critical Alerts
+                    </h2>
+                    <div class="flex items-baseline">
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white" id="criticalAlerts">Loading...</p>
+                        <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">incidents</span>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        High-priority issues to address
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Detection Trends Card -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 relative overflow-hidden lg:col-span-2">
+                    <div class="absolute top-2 right-2">
+                        <span id="trendDataSource" class="text-xs text-indigo-500 dark:text-indigo-400 font-medium bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-full">
+                            Firebase Data
+                        </span>
+                    </div>
+                    
+                    <h2 class="text-xl font-bold mb-1 text-gray-900 dark:text-white flex items-center">
+                        <i class="bi bi-graph-up-arrow mr-2 text-indigo-500"></i> Detection Trends
+                    </h2>
+                    
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Animal behavior detection patterns over time
+                    </p>
+                    
+                    <div class="flex justify-end mb-4">
+                        <select id="trendFilter" class="rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-sm py-1 px-3 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="24h">Last 24 Hours</option>
+                            <option value="7d">Last 7 Days</option>
+                            <option value="30d">Last 30 Days</option>
+                            <option value="90d">Last 90 Days</option>
+                        </select>
+                    </div>
+                    
+                    <div id="trendChartContainer" class="relative h-64 transition-opacity duration-300">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                    
+                    <div class="flex justify-between mt-4 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-3">
+                        <div class="flex items-center">
+                            <span class="inline-block w-3 h-3 bg-green-500 rounded-full mr-1"></span>
+                            <span>Normal</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="inline-block w-3 h-3 bg-yellow-500 rounded-full mr-1"></span>
+                            <span>Warning</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="inline-block w-3 h-3 bg-red-500 rounded-full mr-1"></span>
+                            <span>Hazard</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Distribution Chart Card -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 relative overflow-hidden col-span-1">
+                    <h2 class="text-xl font-bold mb-1 text-gray-900 dark:text-white flex items-center">
+                        <i class="bi bi-pie-chart mr-2 text-purple-500"></i> Behavior Distribution
+                    </h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Classification breakdown by type
+                    </p>
+                    
+                    <div class="relative h-48 mb-4">
+                        <canvas id="donutChart"></canvas>
+                    </div>
+
+                    <div id="chartLegend" class="space-y-3 pt-2">
+                        <!-- Generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Recent Activity Card -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 relative overflow-hidden lg:col-span-2">
+                    <h2 class="text-xl font-bold mb-1 text-gray-900 dark:text-white flex items-center">
+                        <i class="bi bi-activity mr-2 text-green-500"></i> Recent Activity
+                    </h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Latest animal detections and behaviors
+                    </p>
+                    
+                    <div class="overflow-hidden">
+                        <div class="align-middle inline-block min-w-full">
+                            <div class="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Animal</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Camera</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Behavior</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentActivityBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white" colspan="4">
+                                                <div class="flex items-center justify-center">
+                                                    <i class="bi bi-hourglass animate-spin mr-2"></i>
+                                                    Loading recent activity...
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        <div class="mt-4 text-center">
-                            <a href="{{ route('logs.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                View All Activities →
-                            </a>
-                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div>
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">System Status</h2>
-                <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-700 dark:text-gray-300">Firebase Connection</span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" id="firebaseStatus">
-                                Connected
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-700 dark:text-gray-300">Detection Engine</span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" id="detectionStatus">
-                                Active
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-700 dark:text-gray-300">Camera Network</span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" id="cameraStatus">
-                                Online
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-700 dark:text-gray-300">Last Update</span>
-                            <span class="text-gray-700 dark:text-gray-300 text-sm" id="lastUpdate">
-                                Just now
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                <!-- Behavior Categories -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 relative overflow-hidden col-span-1">
+                    <h2 class="text-xl font-bold mb-1 text-gray-900 dark:text-white flex items-center">
+                        <i class="bi bi-list-check mr-2 text-blue-500"></i> Behavior Categories
+                    </h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        Detected behaviors by type
+                    </p>
 
-        <!-- Detection Trends Section -->
-        <div>
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Detection Trends</h2>
-            <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-                <div class="mb-4 flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Activity Over Time</h3>
-                    <select id="trendFilter" class="rounded-md border-gray-300 text-sm">
-                        <option value="24h">Last 24 Hours</option>
-                        <option value="7d">Last 7 Days</option>
-                        <option value="30d">Last 30 Days</option>
-                    </select>
-                </div>
-                <div class="h-64">
-                    <canvas id="trendChart"></canvas>
-                </div>
-            </div>
-        </div>
+                    <div id="categoryAccordion" class="space-y-3">
+                        <!-- Normal Behaviors -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden">
+                            <h2>
+                                <button type="button" class="flex w-full items-center justify-between p-4 text-left" data-accordion-target="#normal-behaviors">
+                                    <span class="flex items-center">
+                                        <span class="bg-green-100 dark:bg-green-900/30 p-1.5 rounded-full mr-2">
+                                            <i class="bi bi-emoji-smile text-green-500"></i>
+                                        </span>
+                                        <span class="font-medium text-gray-900 dark:text-white">Normal Behaviors</span>
+                                    </span>
+                                    <i class="bi bi-chevron-down text-gray-500"></i>
+                                </button>
+                            </h2>
+                            <div id="normal-behaviors" class="p-4 pt-0">
+                                <ul id="normalBehaviorsList" class="space-y-2">
+                                    <li class="text-sm text-gray-500 dark:text-gray-400">Loading...</li>
+                                </ul>
+                            </div>
+                        </div>
 
-        <!-- Charts Section -->
-        <div>
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Situational Overview</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6 flex flex-col items-center">
-                    <h3 class="font-bold text-lg mb-2 text-gray-700 dark:text-gray-200">Normal Situations</h3>
-                    <div class="w-[220px] h-[220px]">
-                        <canvas id="normalChart" width="220" height="220"></canvas>
-                    </div>
-                </div>
-                <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6 flex flex-col items-center">
-                    <h3 class="font-bold text-lg mb-2 text-gray-700 dark:text-gray-200">Warning Situations</h3>
-                    <div class="w-[220px] h-[220px]">
-                        <canvas id="warningChart" width="220" height="220"></canvas>
-                    </div>
-                </div>
-                <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6 flex flex-col items-center">
-                    <h3 class="font-bold text-lg mb-2 text-gray-700 dark:text-gray-200">Hazard Situations</h3>
-                    <div class="w-[220px] h-[220px]">
-                        <canvas id="hazardChart" width="220" height="220"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <!-- Warning Behaviors -->
+                        <div class="bg-yellow-50 dark:bg-yellow-900/10 rounded-lg overflow-hidden">
+                            <h2>
+                                <button type="button" class="flex w-full items-center justify-between p-4 text-left" data-accordion-target="#warning-behaviors">
+                                    <span class="flex items-center">
+                                        <span class="bg-yellow-100 dark:bg-yellow-900/30 p-1.5 rounded-full mr-2">
+                                            <i class="bi bi-exclamation text-yellow-500"></i>
+                                        </span>
+                                        <span class="font-medium text-gray-900 dark:text-white">Warning Behaviors</span>
+                                    </span>
+                                    <i class="bi bi-chevron-down text-gray-500"></i>
+                                </button>
+                            </h2>
+                            <div id="warning-behaviors" class="p-4 pt-0">
+                                <ul id="warningBehaviorsList" class="space-y-2">
+                                    <li class="text-sm text-gray-500 dark:text-gray-400">Loading...</li>
+                                </ul>
+                            </div>
+                        </div>
 
-        <div>
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Overall Summary</h2>
-            <div class="bg-white dark:bg-gray-900 rounded-lg shadow p-6 flex flex-col items-center">
-                <div class="w-[260px] h-[260px]">
-                    <canvas id="summaryChart" width="260" height="260"></canvas>
+                        <!-- Hazard Behaviors -->
+                        <div class="bg-red-50 dark:bg-red-900/10 rounded-lg overflow-hidden">
+                            <h2>
+                                <button type="button" class="flex w-full items-center justify-between p-4 text-left" data-accordion-target="#hazard-behaviors">
+                                    <span class="flex items-center">
+                                        <span class="bg-red-100 dark:bg-red-900/30 p-1.5 rounded-full mr-2">
+                                            <i class="bi bi-exclamation-triangle text-red-500"></i>
+                                        </span>
+                                        <span class="font-medium text-gray-900 dark:text-white">Hazard Behaviors</span>
+                                    </span>
+                                    <i class="bi bi-chevron-down text-gray-500"></i>
+                                </button>
+                            </h2>
+                            <div id="hazard-behaviors" class="p-4 pt-0">
+                                <ul id="hazardBehaviorsList" class="space-y-2">
+                                    <li class="text-sm text-gray-500 dark:text-gray-400">Loading...</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        let charts = {};
-        let trendChart = null;
-
-        function renderChart(id, data, label) {
-            const ctx = document.getElementById(id).getContext('2d');
-            const backgroundColors = [
-                '#4CAF50', '#2196F3', '#FF9800', '#F44336', '#9C27B0', '#00BCD4', '#8BC34A'
-            ];
-
-            if (charts[id]) {
-                charts[id].data = {
-                    labels: Object.keys(data),
-                    datasets: [{
-                        data: Object.values(data),
-                        backgroundColor: backgroundColors
-                    }]
-                };
-                charts[id].options.plugins.title.text = label;
-                charts[id].update();
-            } else {
-                charts[id] = new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: Object.keys(data),
-                        datasets: [{
-                            label: label,
-                            data: Object.values(data),
-                            backgroundColor: backgroundColors
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
-                            },
-                            title: {
-                                display: true,
-                                text: label
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        function renderTrendChart(data) {
-            const ctx = document.getElementById('trendChart').getContext('2d');
-            
-            if (trendChart) {
-                trendChart.destroy();
-            }
-
-            trendChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        label: 'Normal',
-                        data: data.normal,
-                        borderColor: '#4CAF50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                        tension: 0.4
-                    }, {
-                        label: 'Warning',
-                        data: data.warning,
-                        borderColor: '#FF9800',
-                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
-                        tension: 0.4
-                    }, {
-                        label: 'Hazard',
-                        data: data.hazard,
-                        borderColor: '#F44336',
-                        backgroundColor: 'rgba(244, 67, 54, 0.1)',
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    }
-                }
-            });
-        }
-
-        function updateKPIs(data) {
-            document.getElementById('totalDetections').textContent = data.total_detections || 0;
-            document.getElementById('activeCameras').textContent = data.active_cameras || 0;
-            document.getElementById('alertsToday').textContent = data.alerts_today || 0;
-            document.getElementById('criticalAlerts').textContent = data.critical_alerts || 0;
-        }
-
-        function updateRecentActivity(activities) {
-            const container = document.getElementById('recentActivity');
-            container.innerHTML = '';
-            
-            if (!activities || activities.length === 0) {
-                container.innerHTML = '<div class="text-center text-gray-500 dark:text-gray-400 py-8">No recent activities</div>';
-                return;
-            }
-
-            activities.slice(0, 5).forEach(activity => {
-                const activityElement = document.createElement('div');
-                activityElement.className = 'flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg';
-                
-                const severityColor = activity.classification === 'attacking' ? 'text-red-600' : 
-                                    activity.classification === 'visitor close' ? 'text-yellow-600' : 'text-green-600';
-                
-                activityElement.innerHTML = `
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">
-                            ${activity.animal_name} - ${activity.classification}
-                        </p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Camera: ${activity.camera} | Confidence: ${activity.confidence}%
-                        </p>
-                    </div>
-                    <div class="flex-shrink-0 text-sm text-gray-500 dark:text-gray-400">
-                        ${new Date(activity.created_at).toLocaleTimeString()}
-                    </div>
-                `;
-                
-                container.appendChild(activityElement);
-            });
-        }
-
-        function updateSystemStatus(status) {
-            // Update Firebase status
-            const firebaseStatus = document.getElementById('firebaseStatus');
-            firebaseStatus.textContent = status.firebase ? 'Connected' : 'Disconnected';
-            firebaseStatus.className = status.firebase ? 
-                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800' :
-                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800';
-
-            // Update detection engine status
-            const detectionStatus = document.getElementById('detectionStatus');
-            detectionStatus.textContent = status.detection_engine ? 'Active' : 'Inactive';
-            detectionStatus.className = status.detection_engine ?
-                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800' :
-                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800';
-
-            // Update camera network status
-            const cameraStatus = document.getElementById('cameraStatus');
-            cameraStatus.textContent = status.cameras > 0 ? 'Online' : 'Offline';
-            cameraStatus.className = status.cameras > 0 ?
-                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800' :
-                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800';
-        }
-
-        function fetchDashboardData() {
-            Promise.all([
-                fetch('/dashboard/charts').then(res => res.json()),
-                fetch('/dashboard/kpis').then(res => res.json()),
-                fetch('/dashboard/recent-activity').then(res => res.json()),
-                fetch('/dashboard/trends').then(res => res.json()),
-                fetch('/dashboard/system-status').then(res => res.json())
-            ]).then(([charts, kpis, activity, trends, systemStatus]) => {
-                // Update charts
-                renderChart('normalChart', charts.normal, 'Normal Situations');
-                renderChart('warningChart', charts.warning, 'Warning Situations');
-                renderChart('hazardChart', charts.hazard, 'Hazard Situations');
-                renderChart('summaryChart', charts.summary, 'Overall Summary');
-                
-                // Update KPIs
-                updateKPIs(kpis);
-                
-                // Update recent activity
-                updateRecentActivity(activity);
-                
-                // Update trend chart
-                renderTrendChart(trends);
-                
-                // Update system status
-                updateSystemStatus(systemStatus);
-                
-                // Update last update time
-                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
-            }).catch(error => {
-                console.error('Dashboard update failed:', error);
-            });
-        }
-
-        // Event listeners
-        document.getElementById('trendFilter').addEventListener('change', function() {
-            fetch(`/dashboard/trends?period=${this.value}`)
-                .then(res => res.json())
-                .then(trends => renderTrendChart(trends));
-        });
-
-        // Initial load and auto-refresh
-        fetchDashboardData();
-        setInterval(fetchDashboardData, 30000); // Auto-refresh every 30 seconds
-    </script>
+    <script src="/js/dashboard.js"></script>
 </x-app-layout>
