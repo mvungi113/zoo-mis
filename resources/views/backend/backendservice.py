@@ -23,7 +23,7 @@ warning_behaviors = ["visitor close", "user interacting with animal"]
 cap = cv2.VideoCapture(0)
 
 while True:
-    ret, frame = cap.read()
+    ret, frame = cap.read()  # Fixed: use 'frame' instead of 'frdroiame'
     if not ret:
         break
 

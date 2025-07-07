@@ -1,6 +1,6 @@
 <x-guest-layout>
-    <!-- Navbar -->
-    <nav class="flex justify-between items-center p-4 md:p-6 text-white fixed top-0 left-0 right-0 bg-gradient-to-r from-indigo-600 to-blue-600 shadow-lg backdrop-blur-sm bg-opacity-90 z-10">
+    <!-- Navbar - Increased z-index -->
+    <nav class="flex justify-between items-center p-4 md:p-6 text-white fixed top-0 left-0 right-0 bg-gradient-to-r from-indigo-600 to-blue-600 shadow-lg backdrop-blur-sm bg-opacity-90 z-50">
         <a href="/" class="text-2xl md:text-3xl font-extrabold tracking-wide flex items-center space-x-2 transition-transform duration-200 hover:scale-105">
             <x-application-logo class="h-8 w-8 md:h-10 md:w-10" />
             <span>Zoo Intelligence</span>
@@ -34,18 +34,18 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="home" class="flex flex-col md:flex-row items-center justify-between min-h-screen p-4 md:p-12 pt-32 bg-gradient-to-br from-blue-900 via-indigo-700 to-blue-600 text-white relative overflow-hidden">
+    <!-- Hero Section - Adjusted padding top -->
+    <section id="home" class="flex flex-col md:flex-row items-center justify-between min-h-screen p-4 md:p-12 pt-24 md:pt-32 bg-gradient-to-br from-blue-900 via-indigo-700 to-blue-600 text-white relative overflow-hidden">
         <!-- Animated Background Blobs -->
         <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-200 opacity-20 rounded-full mix-blend-multiply filter blur-3xl animate-blob z-0"></div>
         <div class="absolute top-1/2 -right-20 transform -translate-y-1/2 w-80 h-80 bg-blue-300 opacity-20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000 z-0"></div>
         <div class="absolute bottom-0 left-1/3 w-96 h-96 bg-blue-200 opacity-20 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000 z-0"></div>
         
         <!-- Hero Content -->
-        <div class="max-w-lg text-center md:text-left z-10">
-            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-lg leading-tight">
-                Real-Time Zoo Surveillance<br class="hidden md:block" />
-                <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-indigo-100">and Management System</span>
+        <div class="w-full max-w-2xl text-center md:text-left z-10 md:pr-12">
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4 drop-shadow-lg leading-tight">
+            Real-Time Zoo Surveillance<br class="hidden md:block" />
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-indigo-100">and Management System</span>
             </h1>
             <h2 class="text-2xl md:text-3xl mb-4 font-semibold text-blue-100">Revolutionizing Animal &amp; Visitor Monitoring</h2>
             <p class="text-base md:text-lg mb-8 text-blue-100 bg-blue-800 bg-opacity-30 backdrop-blur-sm p-4 rounded-lg shadow-lg">
