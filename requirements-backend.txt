@@ -1,0 +1,5 @@
+opencv-python
+ultralytics
+firebase-admin
+numpy
+torch
